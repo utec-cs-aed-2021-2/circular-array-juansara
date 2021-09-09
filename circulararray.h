@@ -10,23 +10,23 @@ private:
     int back, front;
     
 public:
-    CircularArray();
-    CircularArray(int _capacity);
-    virtual ~CircularArray();
-    void push_front(T data);
-    void push_back(T data);
-    void insert(T data, int pos);
-    T pop_front();
-    T pop_back();
-    bool is_full();
-    bool is_empty();
-    int size();
-    void clear();
-    T &operator[](int);
-    void sort();
-    bool is_sorted();
-    void reverse();
-    string to_string(string sep=" ");
+    CircularArray(); //Completo
+    CircularArray(int _capacity); //Completo
+    virtual ~CircularArray(); //Completo
+    void push_front(T data); //Completo
+    void push_back(T data); //Completo
+    void insert(T data, int pos); //Completo
+    T pop_front(); //Completo
+    T pop_back(); //Completo
+    bool is_full(); //Completo
+    bool is_empty(); //Completo
+    int size(); //Completo
+    void clear(); //Completo
+    T &operator[](int); //Completo
+    void sort(); //Completo
+    bool is_sorted(); //Completo
+    void reverse(); //Completo
+    string to_string(string sep=" "); //Completo
 
 private:
     int next(int);
@@ -72,4 +72,195 @@ string CircularArray<T>::to_string(string sep)
     for (int i = 0; i < size(); i++)
         result += std::to_string((*this)[i]) + sep;
     return result;    
+}
+
+template<class T>
+bool CircularArray<T>::is_full() {
+    return ((front == 0 && back == capacity - 1) || front == next(back));
+}
+
+template<class T>
+bool CircularArray<T>::is_empty() {
+    return (front == -1);
+}
+
+template<class T>
+int CircularArray<T>::size() {
+    if(back > front){
+        return back - front + 1;
+    }
+    else{
+        return back - front + 1 + capacity;
+    }
+}
+
+template<class T>
+T& CircularArray<T>::operator[](int index) {
+    return array[(front + index) % capacity];
+}
+
+template<class T>
+void CircularArray<T>::push_back(T data) {
+    if (is_full()) {
+        cout << "Arreglo lleno" << endl;
+        return;
+    }
+    else{
+        //Si no hay nada en el arreglo
+        if (front == -1) {
+            front = 0;
+        }
+        //Si el back esta en otra posicion que no sea la ultima
+        back = next(back);
+        array[back] = data;      
+    }
+}
+
+template<class T>
+void CircularArray<T>::push_front(T data) {
+    if (is_full()) {
+        cout << "Arreglo lleno" << endl;
+        return;
+    }
+    else{
+    //Si no hay nada en el array
+        if (front == -1) {
+            front = 0;
+            back = 0;
+        }
+        //Si el front se encuentra en otra posicion, vamos al previo
+            front = prev(front);
+        //Le ponemos el valor
+            array[front] = data;
+    }
+}
+
+template<class T>
+void CircularArray<T>::insert(T data, int pos) {
+    if (((front + pos) % capacity) == front) {
+        push_front(data);
+        return;
+    }
+    else if (((front + pos) % capacity) == back) {
+        push_back(data);
+        return;
+    }
+    else {
+        capacity++;
+        //Shifteo los elementos una posicion hasta la posicion
+        for (int i = capacity; i >= ((front + pos) % capacity); i--) {
+            array[i] = array[i - 1];
+        }
+        array[((front + pos) % capacity)] = data;
+        return;
+    }
+}
+
+template<class T>
+T CircularArray<T>::pop_front() {
+    T element = 0;
+    if (is_empty()) {
+        cout << "Array vacio" << endl;
+        return -1;
+    }
+    else{
+        element = array[front];
+        if(front == back){ //Solo tiene un elemento
+            front = -1;
+            back = -1;
+        }
+        else{
+            front = next(front);
+        }
+    }
+    return element;
+}
+template<class T>
+T CircularArray<T>::pop_back() {
+    T element = 0;
+    if (is_empty()) {
+        cout << "Array vacio" << endl;
+        return 0;
+    }
+    else{
+        element = array[back];
+        //Si solo hay un elemento
+        if (front == back) {
+            front = -1;
+            back = -1;
+    } 
+        else {
+            back = prev(back);
+        }
+    }
+    return element;
+}
+
+template<class T>
+bool CircularArray<T>::is_sorted() {
+    if (is_empty()) {
+        cout << "Array vacio" << endl;
+        return false;
+    }
+    if(back > front){
+        for (int i = front; i != back ; i = next(i)) {
+            if (array[i] > array[i + 1]) {
+                return false;
+            }
+        }
+    }
+    else if (front > back) {
+        for (int i = front; i != back ; i = next(i)) {
+            if (array[i] > array[i + 1]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+//Bubble Sort
+template<class T>
+void CircularArray<T>::sort() {
+    T temp;
+    if (is_empty()) {
+        cout << "Arreglo vacio" << endl;
+        return;
+    }
+    for(int i = front; i != back - 1; i = next(i)){
+        int min_indice = i;
+        for(int j = i + 1; j != back + 1; j = next(j)){
+            if(array[j] < array[min_indice]){
+                min_indice = j; 
+            }
+        }
+        temp = array[min_indice];
+        array[min_indice] = array[i];
+        array[i] = temp;
+    }
+    return;
+}
+
+template<class T>
+void CircularArray<T>::reverse() {
+    T temp;
+    auto ini = front;
+    auto final = back;
+    if (is_empty()) {
+        cout << "Array vacio" << endl;
+        return;
+    }
+    while(ini != final){
+        temp = array[ini];
+        array[ini] = array[final];
+        array[final] = temp;
+        ini = next(ini);
+        final = prev(final);
+    }
+    return;
+}
+
+template<class T>
+void CircularArray<T>::clear() {
+    delete[] array;
 }
