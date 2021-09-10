@@ -102,8 +102,7 @@ T& CircularArray<T>::operator[](int index) {
 template<class T>
 void CircularArray<T>::push_back(T data) {
     if (is_full()) {
-        cout << "Arreglo lleno" << endl;
-        return;
+        capacity *= 2;
     }
     else{
         //Si no hay nada en el arreglo
@@ -119,8 +118,7 @@ void CircularArray<T>::push_back(T data) {
 template<class T>
 void CircularArray<T>::push_front(T data) {
     if (is_full()) {
-        cout << "Arreglo lleno" << endl;
-        return;
+        capacity *= 2;
     }
     else{
     //Si no hay nada en el array
@@ -137,11 +135,11 @@ void CircularArray<T>::push_front(T data) {
 
 template<class T>
 void CircularArray<T>::insert(T data, int pos) {
-    if (((front + pos) % capacity) == front) {
+    if (((front + pos) % capacity) == front) { //si lo quiere poner en la posicion del front
         push_front(data);
         return;
     }
-    else if (((front + pos) % capacity) == back) {
+    else if (((front + pos) % capacity) == back) { //si lo quiere poner en la posicion del back
         push_back(data);
         return;
     }
