@@ -27,6 +27,7 @@ public:
     bool is_sorted(); //Completo
     void reverse(); //Completo
     string to_string(string sep=" "); //Completo
+    void resize();
 
 private:
     int next(int);
@@ -102,23 +103,22 @@ T& CircularArray<T>::operator[](int index) {
 template<class T>
 void CircularArray<T>::push_back(T data) {
     if (is_full()) {
-        capacity *= 2;
+        resize();
     }
     else{
         //Si no hay nada en el arreglo
         if (front == -1) {
             front = 0;
-        }
-        //Si el back esta en otra posicion que no sea la ultima
-        back = next(back);
-        array[back] = data;      
+        }  
     }
+    back = next(back);
+    array[back] = data; 
 }
 
 template<class T>
 void CircularArray<T>::push_front(T data) {
     if (is_full()) {
-        capacity *= 2;
+        resize();
     }
     else{
     //Si no hay nada en el array
@@ -126,11 +126,11 @@ void CircularArray<T>::push_front(T data) {
             front = 0;
             back = 0;
         }
-        //Si el front se encuentra en otra posicion, vamos al previo
-            front = prev(front);
-        //Le ponemos el valor
-            array[front] = data;
     }
+    //Si el front se encuentra en otra posicion, vamos al previo
+    front = prev(front);
+    //Le ponemos el valor
+    array[front] = data;
 }
 
 template<class T>
@@ -261,4 +261,20 @@ void CircularArray<T>::reverse() {
 template<class T>
 void CircularArray<T>::clear() {
     delete[] array;
+}
+
+template<class T>
+void CircularArray<T>::resize(){
+    T* new_array = new T[capacity*2];
+    int temp = capacity;
+    int j =  0;
+    for(int i = 0; i < size(); i++){
+        new_array[j] = array[i];
+        j++;
+    }
+    delete[] array;
+    array = new_array;
+    capacity *= 2;
+    back = j - 1;
+    front = 0;
 }
