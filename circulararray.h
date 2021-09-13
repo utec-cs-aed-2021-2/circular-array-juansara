@@ -28,6 +28,7 @@ public:
     void reverse(); //Completo
     string to_string(string sep=" "); //Completo
     void resize();
+    void heapify(T* arr, int tamanio, int nivel);
 
 private:
     int next(int);
@@ -217,26 +218,57 @@ bool CircularArray<T>::is_sorted() {
     return true;
 }
 
-//Bubble Sort
+template<class T> //Extraido del replit del trabajo de Ordenamiento
+void CircularArray<T>::heapify(T* arr, int tamanio, int nivel){
+    
+  // EMPIEZA CON 1 EL LEFT PARA QUE TENGA SENTIDO SU RECORRIDO
+    int root = nivel;
+    int left = 2 * nivel + 1;
+    int right = 2* nivel + 2; 
+
+    /*Si el hijo de la izquierda es mayor que la raiz
+    entonces su raiz pasa a ser el de la izquierda (no hay intercambio entre nodos)
+   */
+
+    if(left < tamanio && arr[left] >= arr[root]){
+        root = left;
+    }
+
+    /*Si el hijo de la derecha es mayor que la raiz entonce la raiz pasa a ser el de la derecha (no hay intercambio entre nodos)
+
+  */
+    if(right < tamanio && arr[right] >= arr[root]){
+        root = right;
+    }
+
+  //Si el nodo en donde estamos, no es una raiz, entonces intercambiamos la raiz con el nodo en dicho nivel
+
+    if(root != nivel){
+
+    swap(arr[nivel],arr[root]);
+
+    //Se aplica recursion para seguir evaluando los demas nodos de los siguientes niveles
+
+    heapify(arr, tamanio, root);
+    }
+}
+
 template<class T>
-void CircularArray<T>::sort() {
-    T temp;
-    if (is_empty()) {
-        cout << "Arreglo vacio" << endl;
-        return;
+void CircularArray<T>::sort() { //Se inicia con back en la ultima posicion y front en 0
+    back = size() - 1;
+    front = 0;
+
+    for(int i = (size() - 1)/ 2 ; i >= 0; i--){
+        heapify(array, size(), i);
     }
-    for(int i = front; i != back - 1; i = next(i)){
-        int min_indice = i;
-        for(int j = i + 1; j != back + 1; j = next(j)){
-            if(array[j] < array[min_indice]){
-                min_indice = j; 
-            }
-        }
-        temp = array[min_indice];
-        array[min_indice] = array[i];
-        array[i] = temp;
+
+  //Elimina los elementos uno por uno
+    for(int i= size() - 1; i > 0; i--){
+    //Mueve la raiz hasta el final
+        swap(array[0],array[i]);
+    //Reorganizamos todo el heap pero con menos elementos
+        heapify(array, i, 0);
     }
-    return;
 }
 
 template<class T>
